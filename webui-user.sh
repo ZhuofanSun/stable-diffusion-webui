@@ -10,7 +10,8 @@
 #clone_dir="stable-diffusion-webui"
 
 # Commandline arguments for webui.py, for example: export COMMANDLINE_ARGS="--medvram --opt-split-attention"
-#export COMMANDLINE_ARGS=""
+export COMMANDLINE_ARGS=" --lowvram --precision full --no-half --skip-torch-cuda-test
+"
 
 # python3 executable
 #python_cmd="python3"
