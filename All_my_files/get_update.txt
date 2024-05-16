@@ -1,0 +1,10 @@
+git remote add upstream git@github.com:AUTOMATIC1111/stable-diffusion-webui.git # 添加远程上游，指向原始库
+
+git fetch upstream  # 从上游仓库获取最新的更改
+
+git merge upstream/merge_branch # 合并上游的更改
+
+# 本地分支
+merge_branch 合并远程用的
+master 本地主分支
+
