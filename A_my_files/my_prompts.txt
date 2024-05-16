@@ -1,0 +1,6 @@
+<lora:inniesbettervaginas_v11:1>,missionarypose,1girl,small_breasts,penis,teen,student,lying,vaginal,vagina,grabbing_own_breast,red_eyes,short hair,cum,excessive_cum,blush,sweaty,moan,(hearts:1.2),<lora:POVMissionary:1>,
+
+<lora:easynegative:1>,(worst quality:1.4),(low quality:1.4),(monochrome:1.1),extra limbs,glowing eyes,naked,
+
+DPM++ 2M Karras, CFG: 5, Steps: 20, 1782998215, Clip skip: 2
+512*768
