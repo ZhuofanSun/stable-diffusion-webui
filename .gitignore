@@ -39,3 +39,4 @@ notification.mp3
 /.coverage*
 /test/test_outputs
 /cache
+A_my_files/my_prompts.txt
