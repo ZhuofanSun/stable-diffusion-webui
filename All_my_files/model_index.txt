@@ -1,5 +1,0 @@
-add_detail  # lora_细节
-easynegative  # lora_NegPrompts
-age_slider  # lora_控制年龄
-aamMixAnime  # sd_二次元
-counterfeit  # sd_二次元
