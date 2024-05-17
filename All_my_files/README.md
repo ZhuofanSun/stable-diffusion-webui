@@ -18,6 +18,7 @@
     - **[获取更新](从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新)**
     - **[Models, Lora, Plugin](#Models, Lora, Plugin (Civitai))**
     - **[图片放大](#ControlNet 图片放大)**
+    - **[采样器&噪声](#采样器&噪声)**
 
 ***
 
@@ -174,3 +175,29 @@ master 本地主分支
 5. **脚本script：Ultimate SD upscale**
     1. **Target size type：Scale from image size -- 放大倍数(长宽各放大n倍)**
 6. **放大效果不理想可以考虑分多几次放大**
+
+### 采样器&噪声
+
+- **名字中带有a，及SDE的为祖先采样器 **
+
+​	不收敛，重复率低
+
+- **Euler、Euler a** 
+
+​	快速获得简单的结果
+
+- **DPM++ 2M Karras**
+
+​	推荐的算法，速度快，质量好，推荐步数 **20~30** 步
+
+- **DPM++ SDE Karras**
+
+​	图像质量好但是不收敛，速度慢，推荐步数 **10~15** 步
+
+- **DPM++ 2M SDE Karras**
+
+​	2M和SDE的结合算法，速度和2M相仿，推荐步数 **20~30** 步
+
+- **DPM++ 2M SDE Exponential***
+
+​	画面柔和，细节更少一些，推荐步数 **20~30** 步
