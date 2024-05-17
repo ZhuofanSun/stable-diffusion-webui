@@ -4,10 +4,12 @@ import requests
 from datetime import date
 import os
 
+
 def get_today_date():
     current_date = date.today()
     # 格式化 yyyy-mm-dd
     return current_date.strftime("%Y-%m-%d")
+
 
 def submit_post(url: str, data: dict):
     return requests.post(url, data=json.dumps(data))
@@ -49,9 +51,6 @@ def generate():
                       'height': 512,
                       'cfg_scale': 7}  # clip skip 默认2
 
-
-
-
     # 存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
     images_name = "miku"  # xxxx
     today = get_today_date()
@@ -65,8 +64,10 @@ def generate():
 
         save_encoded_image(response.json()['images'][i], save_image_path)  # 编码并保存图片
 
+
 def main():
     generate()
+
 
 if __name__ == '__main__':
     main()
