@@ -1,10 +1,9 @@
 import requests
-
 from generate_uitl import Generate
-import json
-import os
 
 option_data = {}
+txt2img_url = r'http://127.0.0.1:7860/sdapi/v1/txt2img'
+options_url = r'http://127.0.0.1:7860/sdapi/v1/options'
 
 
 def set_clip(new_clip=None):
@@ -25,13 +24,52 @@ def set_model(new_model=None):
         option_data["sd_model_checkpoint"] = new_model
 
 
-def post_option(url):
+def set_vae(new_vae=None):
     global option_data
 
-    if len(option_data) == 0:
+    if new_vae is None:
         pass
     else:
-        requests.post(url=url, json=option_data)
+        option_data["sd_vae"] = new_vae
+
+
+def post_option():
+    global option_data, options_url
+
+    if 'sd_vae' not in option_data.keys():
+        option_data['sd_vae'] = None
+
+    requests.post(url=options_url, json=option_data)
+
+
+def txt2img_test_cfg(data):
+    global txt2img_url
+
+    for i in range(4, 11):
+        data['cfg_scale'] = i
+        Generate().generate(url=txt2img_url, image_data=data, images_name='angelMiku_testCFG')
+
+
+def txt2img_test_model(data):
+    global txt2img_url
+
+    for i in ['abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
+              'cetusMix_Codaedition.safetensors [bd518b9aee]',
+              'counterfeitV30_v30.safetensors [17277fbe68]',
+              'hassakuHentaiModel_v13.safetensors [7eb674963a]',
+              'meinahentai_v4.safetensors [8145104977]',
+              'meinamix_meinaV10.safetensors [d967bcae4a]']:
+        set_model(i)
+        post_option()
+        Generate().generate(url=txt2img_url, image_data=data, images_name='angelMiku_testModels')
+
+
+def txt2img_test_vae(data):
+    set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    for i in [None, 'clearvaeSD15_v23.safetensors', 'klF8Anime2VAE_klF8Anime2VAE.safetensors']:
+        set_vae(i)
+        post_option()
+        Generate().generate(url=txt2img_url, image_data=data, images_name='girInCar_testVAE')
 
 
 def main():
@@ -75,7 +113,7 @@ def main():
                            'disfigured,malformed limbs,blurry,',
         'sampler_index': 'DPM++ SDE',  # 采样器
         'scheduler': 'Karras',  # 噪声调度器
-        'batch_size': 4,  # 批大小
+        'batch_size': 1,  # 批大小
         'n_iter': 1,  # 每批n个
         'seed': 601687573,  # 种子
         'steps': 25,  # 步数
@@ -84,26 +122,14 @@ def main():
         'cfg_scale': 10  # 引导词规模
     }
 
-    txt2img_url = r'http://127.0.0.1:7860/sdapi/v1/txt2img'
-    options_url = r'http://127.0.0.1:7860/sdapi/v1/options'
-
     # set_clip(2)
     # set_model('counterfeitV30_v30.safetensors [17277fbe68]')
     # post_option(options_url)
     # Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku')
 
-    # for i in range(4, 11):
-    #     angelMiku_data['cfg_scale'] = i
-    #     Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
-    for i in ['abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
-              'cetusMix_Codaedition.safetensors [bd518b9aee]',
-              'counterfeitV30_v30.safetensors [17277fbe68]',
-              'hassakuHentaiModel_v13.safetensors [7eb674963a]',
-              'meinahentai_v4.safetensors [8145104977]',
-              'meinamix_meinaV10.safetensors [d967bcae4a]']:
-        set_model(i)
-        post_option(options_url)
-        Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testModels')
+    # txt2img_test_cfg(angelMiku_data)
+    # txt2img_test_model(angelMiku_data)
+    txt2img_test_vae(girInCar_data)
 
 
 if __name__ == '__main__':
