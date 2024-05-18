@@ -1,24 +1,37 @@
+import requests
+
 from generate_uitl import Generate
 import json
 import os
 
+option_data = {}
 
-def update_clip(new_value):
-    # 获取当前文件夹的上一层目录
-    parent_dir = os.path.dirname(os.getcwd())
-    # 拼接得到config.json的完整路径
-    config_path = os.path.join(parent_dir, 'config.json')
 
-    # 打开并读取config.json文件
-    with open(config_path, 'r') as f:
-        config = json.load(f)
+def set_clip(new_clip=None):
+    global option_data
 
-    # 更新CLIP_stop_at_last_layers的值
-    config['CLIP_stop_at_last_layers'] = new_value
+    if new_clip is None:
+        pass
+    else:
+        option_data["CLIP_stop_at_last_layers"] = new_clip
 
-    # 将更新后的config写回文件
-    with open(config_path, 'w') as f:
-        json.dump(config, f, indent=4)
+
+def set_model(new_model=None):
+    global option_data
+
+    if new_model is None:
+        pass
+    else:
+        option_data["sd_model_checkpoint"] = new_model
+
+
+def post_option(url):
+    global option_data
+
+    if len(option_data) == 0:
+        pass
+    else:
+        requests.post(url=url, json=option_data)
 
 
 def main():
@@ -76,10 +89,22 @@ def main():
     }
 
     txt2img_url = r'http://127.0.0.1:7860/sdapi/v1/txt2img'
+    options_url = r'http://127.0.0.1:7860/sdapi/v1/options'
+
+    # set_clip(2)
+    # set_model('counterfeitV30_v30.safetensors [17277fbe68]')
+    # post_option(options_url)
+    Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku')
+
     # for i in range(4, 11):
     #     angelMiku_data['cfg_scale'] = i
     #     Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
-    Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
+
+    for i in ['aamAnyloraAnimeMixAnime_v1.safetensors [354b8c571d]', 'abyssorangemix2_Hard.safetensors [e714ee20aa]',
+              'counterfeitV30_v30.safetensors [17277fbe68]']:
+        set_model(i)
+        post_option(options_url)
+        Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testModels')
 
 
 if __name__ == '__main__':

@@ -31,6 +31,7 @@ class Generate:
         try:
             with open(output_path, 'wb') as image_file:
                 image_file.write(base64.b64decode(b64_image))
+                image_file.close()
         except Exception as e:
             print(e)
             pass
