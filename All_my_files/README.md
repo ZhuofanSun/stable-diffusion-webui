@@ -4,7 +4,7 @@
 
 
 ## 目录
-1. **[模型 & 数据集下载](#模型&数据集下载)**
+1. **[模型 & 数据集下载](#模型数据集下载)**
     - **[资源站](#资源站)**
     - **[下载](#下载)**
 2. **[Ollama](#Ollama)**
@@ -15,8 +15,8 @@
     - **[启动/关闭Webui容器](#启动关闭webui容器)**
     - **[在Open-webui中使用Stable-diffusion](#在Open-webui中使用Stable-diffusion)**
 4. **[Stable diffusion](#Stable-diffusion)**
-    - **[#从automatic1111获取更新](#从automatic1111获取更新)**
-    - **[Models/Lora/Plugin/VAE](#Mmodelslorapluginvae)**
+    - **[从automatic1111获取更新](#从automatic1111获取更新)**
+    - **[Models/Lora/Plugin/VAE](#modelslorapluginvae)**
     - **[图片放大](#controlnet图片放大)**
     - **[采样器&噪声](#采样器噪声)**
 
