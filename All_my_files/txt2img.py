@@ -53,8 +53,6 @@ def main():
         # 反向提示词
         'negative_prompt': '(low quality, worst quality:1.4), (FastNegativeEmbedding:0.9),'
                            '((dyeing)),((oil painting)),((impasto))',
-        # 模型名称 models/sStable-diffusion/
-        'sd_model_checkpoint': "aamAnyloraAnimeMixAnime_v1",
         'sampler_index': 'DPM++ SDE',  # 采样器
         'scheduler': 'Karras',  # 噪声调度器
         'batch_size': 1,  # 批大小
@@ -75,8 +73,6 @@ def main():
         'negative_prompt': '<lora:easynegative:1>,sketches,lowres,low quality,long body,long neck,extra limb,'
                            'disconnected limbs,extra legs,fused fingers,too many fingers,'
                            'disfigured,malformed limbs,blurry,',
-        # 模型名称 models/sStable-diffusion/
-        'sd_model_checkpoint': "counterfeitV30_v30",
         'sampler_index': 'DPM++ SDE',  # 采样器
         'scheduler': 'Karras',  # 噪声调度器
         'batch_size': 4,  # 批大小
@@ -94,14 +90,17 @@ def main():
     # set_clip(2)
     # set_model('counterfeitV30_v30.safetensors [17277fbe68]')
     # post_option(options_url)
-    Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku')
+    # Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku')
 
     # for i in range(4, 11):
     #     angelMiku_data['cfg_scale'] = i
     #     Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
-
-    for i in ['aamAnyloraAnimeMixAnime_v1.safetensors [354b8c571d]', 'abyssorangemix2_Hard.safetensors [e714ee20aa]',
-              'counterfeitV30_v30.safetensors [17277fbe68]']:
+    for i in ['abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
+              'cetusMix_Codaedition.safetensors [bd518b9aee]',
+              'counterfeitV30_v30.safetensors [17277fbe68]',
+              'hassakuHentaiModel_v13.safetensors [7eb674963a]',
+              'meinahentai_v4.safetensors [8145104977]',
+              'meinamix_meinaV10.safetensors [d967bcae4a]']:
         set_model(i)
         post_option(options_url)
         Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testModels')
