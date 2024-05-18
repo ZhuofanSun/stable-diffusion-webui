@@ -1,4 +1,24 @@
 from generate_uitl import Generate
+import json
+import os
+
+
+def update_clip(new_value):
+    # 获取当前文件夹的上一层目录
+    parent_dir = os.path.dirname(os.getcwd())
+    # 拼接得到config.json的完整路径
+    config_path = os.path.join(parent_dir, 'config.json')
+
+    # 打开并读取config.json文件
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+
+    # 更新CLIP_stop_at_last_layers的值
+    config['CLIP_stop_at_last_layers'] = new_value
+
+    # 将更新后的config写回文件
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=4)
 
 
 def main():
@@ -6,7 +26,12 @@ def main():
     浏览器输入localhost:7860可以看到webui,
     http://127.0.0.1:7860/docs可以查看API文档，对应修改下面的json参数
     """
-    # Clip 跳过层默认2，不知道怎么改
+    # Clip 能在webui改，会记录，不知道怎么在api改
+    # Update：
+    # 这个参数在config.json文件中的CLIP_stop_at_last_layers参数进行设置，
+    # 默认好像是1，需要在启动webui服务之前将这个参数设置好。下边那个方法能改但是要重启服务
+    # update_clip(3)
+
     angelMiku_data = {
         # 正向提示词
         'prompt': 'masterpiece, best quality, hatsune miku, white gown, angel, angel wings, golden halo,'
@@ -25,7 +50,7 @@ def main():
         'steps': 20,  # 步数
         'width': 512,  # 宽度
         'height': 684,  # 高度
-        'cfg_scale': 5  # 引导词规模
+        'cfg_scale': 7  # 引导词规模
     }
 
     girInCar_data = {
@@ -51,9 +76,10 @@ def main():
     }
 
     txt2img_url = r'http://127.0.0.1:7860/sdapi/v1/txt2img'
-    for i in range(4, 11):
-        angelMiku_data['cfg_scale'] = i
-        Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
+    # for i in range(4, 11):
+    #     angelMiku_data['cfg_scale'] = i
+    #     Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
+    Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
 
 
 if __name__ == '__main__':
