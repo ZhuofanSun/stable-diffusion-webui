@@ -5,8 +5,8 @@
 
 ## 目录
 1. **[模型 & 数据集下载](#模型 & 数据集下载)**
-    	- **[资源站](#资源站)**
-    	- **[下载](#下载)**
+    - **[资源站](#资源站)**
+    - **[下载](#下载)**
 2. **[Ollama](#Ollama)**
     - **[常见指令](#常见指令)**
     - **[添加新模型](#添加新模型)**
@@ -15,7 +15,7 @@
     - **[启动/关闭Webui](#启动&关闭 Webui 容器)**
     - **[Stable Diffusion图片生成](#在Open-webui中使用Stable diffusion)**
 4. **[Stable diffusion](#Stable diffusion)**
-    - **[获取更新](从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新)**
+    - **[获取更新](# 从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新)**
     - **[Models, Lora, Plugin](#Models, Lora, Plugin (Civitai))**
     - **[图片放大](#ControlNet 图片放大)**
     - **[采样器&噪声](#采样器&噪声)**
@@ -104,10 +104,14 @@ ollama run <your-model-name>  # (下载并)运行模型
         ```shell
         FROM ./your-model-path.gguf
         ```
-    2. ```shell
-    ollama create <your-model-name> -f Modelfile
-   3.  ```shell
-    ollama run <your-model-name>
+    2. 读取模型
+        ```shell
+        ollama create <your-model-name> -f Modelfile
+        ```
+   3. 运行模型
+      ```shell
+      ollama run <your-model-name>
+      ```
 
 ***
 
@@ -183,7 +187,7 @@ master 本地主分支
 
 ### 采样器&噪声
 
-- **名字中带有a，及SDE的为祖先采样器 **
+- **名字中带有a，及SDE的为祖先采样器**
 
 ​	不收敛，重复率低
 
