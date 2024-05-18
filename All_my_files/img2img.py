@@ -1,5 +1,3 @@
-import json
-from progressBar_util import ProgressBar
 from generate_uitl import Generate
 
 
@@ -21,9 +19,9 @@ def main():
         'sd_model_checkpoint': "aamAnyloraAnimeMixAnime_v1",
         'sampler_index': 'DPM++ SDE',  # 采样器
         'scheduler': 'Karras',  # 噪声调度器
-        'batch_size': 4,  # 批大小
+        'batch_size': 1,  # 批大小
         'n_iter': 1,  # 每批n个
-        'seed': -1,  # 种子
+        'seed': 1836097496,  # 种子
         'steps': 20,  # 步数
         'width': 512,  # 宽度
         'height': 684,  # 高度
@@ -53,7 +51,9 @@ def main():
     }
 
     txt2img_url = r'http://127.0.0.1:7860/sdapi/v1/txt2img'
-    Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku')
+    for i in range(4, 11):
+        angelMiku_data['cfg_scale'] = i
+        Generate().generate(url=txt2img_url, image_data=angelMiku_data, images_name='angelMiku_testCFG')
 
 
 if __name__ == '__main__':

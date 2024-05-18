@@ -75,7 +75,7 @@ class Generate:
 
         print(self.response.json())
         index_available = self.get_available_index(images_name, today)
-        for i in range(4):  # No. 图片 = batch_size * n_iter
+        for i in range(image_data['batch_size'] * image_data['n_iter']):  # No. 图片 = batch_size * n_iter
             save_image_name = images_name + str(index_available + i) + '.png'  # 文件名
             save_image_path = os.path.join('outputs', today, save_image_name)  # 文件路径
 
