@@ -151,12 +151,17 @@ merge_branch 合并远程用的
 master 本地主分支
 ```
 
-### Models, Lora, Plugin (Civitai)
-- add_detail  -- **lora 细节**
-- easynegative  -- **lora 反向提示词**
-- age_slider  -- **lora 控制年龄**
-- aamMixAnime  -- **sd 二次元**
-- counterfeit  -- **sd 二次元**
+### Models, Lora, Plugin, VAE
+-  **[Civitai](https://civitai.com) 下载**
+- add_detail  -- **lora**
+- easynegative  -- **lora **
+- age_slider  -- **lora **
+- counterfeit  -- **sd **
+- abyssorangemix3AOM3a1b -- **sd **
+- cetusMix -- **sd**
+- meinamix_v10 -- **sd**
+- clearVAE -- **VAE 细节+色彩**
+- k2-f8-anime2 -- **VAE 色彩**
 - [sd-webui-prompt-all-in-one](https://github.com/Physton/sd-webui-prompt-all-in-one)-- **提示词管理**
 - [stable-diffusion-webui-localization-zh_CN](https://github.com/dtlnor/stable-diffusion-webui-localization-zh_CN)  -- **简中语言包**
 
