@@ -4,25 +4,25 @@
 
 
 ## 目录
-1. **[模型 & 数据集下载](#模型 & 数据集下载)**
+1. **[模型 & 数据集下载](#模型&数据集下载)**
     - **[资源站](#资源站)**
     - **[下载](#下载)**
 2. **[Ollama](#Ollama)**
     - **[常见指令](#常见指令)**
     - **[添加新模型](#添加新模型)**
 3. **[Open-webui](#Open-webui)**
-    - **[向 docker 添加 Webui容器](#向 docker 添加 Webui容器)**
-    - **[启动/关闭Webui](#启动&关闭 Webui 容器)**
-    - **[Stable Diffusion图片生成](#在Open-webui中使用Stable diffusion)**
-4. **[Stable diffusion](#Stable diffusion)**
-    - **[获取更新](# 从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新)**
-    - **[Models, Lora, Plugin](#Models, Lora, Plugin (Civitai))**
-    - **[图片放大](#ControlNet 图片放大)**
+    - **[向 docker 添加 Webui容器](#向docker添加Webui容器)**
+    - **[启动/关闭Webui](#启动&关闭Webui容器)**
+    - **[Stable Diffusion图片生成](#在Open-webui中使用Stable-diffusion)**
+4. **[Stable diffusion](#Stable-diffusion)**
+    - **[获取更新](#从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新)**
+    - **[Models, Lora, Plugin](#Models/Lora/Plugin/VAE)**
+    - **[图片放大](#ControlNet图片放大)**
     - **[采样器&噪声](#采样器&噪声)**
 
 ***
 
-## 模型 & 数据集下载
+## 模型&数据集下载
 
 ### 资源站
 
@@ -116,19 +116,19 @@ ollama run <your-model-name>  # (下载并)运行模型
 ***
 
 ## Open-webui
-### 向 docker 添加 Webui容器
+### 向docker添加Webui容器
 
 ```shell
 docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main  # 只有首次运行，在docker中添加服务
 ```
 
-### 启动&关闭 Webui 容器
+### 启动&关闭Webui容器
 ```shell
 docker run open-webui
 docker stop open-webui
 # 启动后在localhost:3000就可以使用webui了
 ```
-### 在Open-webui中使用Stable diffusion
+### 在Open-webui中使用Stable-diffusion
 
 - 添加stable diffusion webui的api：  open-webui -> 设置 -> 图像 -> URL
 
@@ -142,7 +142,7 @@ docker stop open-webui
 
 ***
 
-## Stable diffusion
+## Stable-diffusion
 ### 从[AUTOMATIC1111](https://github.com/AUTOMATIC1111)获取更新
 
 ```shell
@@ -155,7 +155,7 @@ merge_branch 合并远程用的
 master 本地主分支
 ```
 
-### Models, Lora, Plugin, VAE
+### Models/Lora/Plugin/VAE
 -  **[Civitai](https://civitai.com) 下载**
 - add_detail  -- **lora**
 - easynegative  -- **lora **
@@ -169,7 +169,7 @@ master 本地主分支
 - [sd-webui-prompt-all-in-one](https://github.com/Physton/sd-webui-prompt-all-in-one)-- **提示词管理**
 - [stable-diffusion-webui-localization-zh_CN](https://github.com/dtlnor/stable-diffusion-webui-localization-zh_CN)  -- **简中语言包**
 
-### ControlNet 图片放大
+### ControlNet图片放大
 - [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) -- 插件
 - [ultimate-upscale-for-automatic1111](https://github.com/Coyote-A/ultimate-upscale-for-automatic1111) -- 插件
 - [4x-UltraSharp](https://mega.nz/folder/qZRBmaIY#nIG8KyWFcGNTuMX_XNbJ_g/file/vRYVhaDA) -- 放到models/ESRGAN/里
