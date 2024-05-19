@@ -19,6 +19,7 @@
     - **[Models/Lora/Plugin/VAE](#modelslorapluginvae)**
     - **[图片放大](#controlnet图片放大)**
     - **[采样器&噪声](#采样器噪声)**
+    - **[ControlNet](#controlnet)**
 
 ***
 
@@ -173,7 +174,7 @@ master 本地主分支
 - [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) -- 插件
 - [ultimate-upscale-for-automatic1111](https://github.com/Coyote-A/ultimate-upscale-for-automatic1111) -- 插件
 - [4x-UltraSharp](https://mega.nz/folder/qZRBmaIY#nIG8KyWFcGNTuMX_XNbJ_g/file/vRYVhaDA) -- 放到models/ESRGAN/里
-- [Controlnet模型](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11f1e_sd15_tile.pth) -- 放到models/ControlNet/里
+- [Controlnet模型](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11f1e_sd15_tile.pth) -- 放到models/ControlNet/里： control_v11f1e_sd15_tile.pth
 
 1. **移除正向提示词（是局部放大在拼接，ai会搞混）**
 2. **保留负面提示词**
@@ -188,25 +189,52 @@ master 本地主分支
 ### 采样器&噪声
 
 - **名字中带有a，及SDE的为祖先采样器**
-
-​	不收敛，重复率低
-
+	不收敛，重复率低
 - **Euler、Euler a** 
-
-​	快速获得简单的结果
-
+	快速获得简单的结果
 - **DPM++ 2M Karras**
-
-​	推荐的算法，速度快，质量好，推荐步数 **20~30** 步
-
+	推荐的算法，速度快，质量好，推荐步数 **20~30** 步
 - **DPM++ SDE Karras**
-
-​	图像质量好但是不收敛，速度慢，推荐步数 **10~15** 步
-
+	图像质量好但是不收敛，速度慢，推荐步数 **10~15** 步
 - **DPM++ 2M SDE Karras**
-
-​	2M和SDE的结合算法，速度和2M相仿，推荐步数 **20~30** 步
-
+	2M和SDE的结合算法，速度和2M相仿，推荐步数 **20~30** 步
 - **DPM++ 2M SDE Exponential***
+	画面柔和，细节更少一些，推荐步数 **20~30** 步
 
-​	画面柔和，细节更少一些，推荐步数 **20~30** 步
+### ControlNet
+
+1. **[图片放大](#controlnet图片放大)**
+
+2. **深度(Depth)**
+
+    深度图中距离镜头越近的物品越亮，相似距离基本无法区分 -- 非常有效的替换/提取背景，提取人物动作等
+
+    预处理器（用来生成深度图）：
+
+    - depth_leres & depth_leres++
+
+        ​	整个图片细节更丰富，包括背景。++版可以设置remove near/remove background % (都报错)
+
+    - depth_midas & depth_zoe
+
+        ​	细节较少，背景基本忽略，但是黑白对比更丰富 (zoe报错)
+
+    - depth_anything
+
+        ​	最新模型，目标是建立一个简单而强大的基础模型，在任何情况下处理任何图像
+
+    模型（必须）：control_v11f1p_sd15_depth.pth，同名yaml文件
+
+3. **姿态(OpenPose)**
+
+    专门用来提取/使用人物动作，捕捉人物骨骼，以及表情。非常有效的解决AI画不好手的问题，但是也挺麻烦
+
+    editor插件能编辑骨骼，识别的也还行，但是好麻烦。
+
+    
+
+    
+
+    
+
+    
