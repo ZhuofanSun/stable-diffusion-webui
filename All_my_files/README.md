@@ -205,36 +205,38 @@ master 本地主分支
 
 1. **[图片放大](#controlnet图片放大)**
 
+    
+
 2. **深度(Depth)**
 
     深度图中距离镜头越近的物品越亮，相似距离基本无法区分 -- 非常有效的替换/提取背景，提取人物动作等
 
     预处理器（用来生成深度图）：
 
-    - depth_leres & depth_leres++
+    - **depth_leres & depth_leres++**
+      整个图片细节更丰富，包括背景。++版可以设置remove near/remove background % [(都报错)](https://github.com/Mikubill/sd-webui-controlnet/issues/1649)
+      用
 
-        ​	整个图片细节更丰富，包括背景。++版可以设置remove near/remove background % (都报错)
+      ```shell
+      All_my_files/__init__.py
+      ```
+      替换
+      ```shell
+      extensions/sd-webui-controlnet/annotator/leres/__init__.py
+      ```
+      可以解决。报错原因是 新版Pythorch 用了Metal Performance Shaders (MPS) 后端，而以前的程序一部分用了cpu，一部分用了mps，在init程序里统一了就行
 
-    - depth_midas & depth_zoe
+    - **depth_midas & depth_zoe**
+      细节较少，背景基本忽略，但是黑白对比更丰富 (zoe报错)
 
-        ​	细节较少，背景基本忽略，但是黑白对比更丰富 (zoe报错)
+    - **depth_anything**
+      最新模型，目标是建立一个简单而强大的基础模型，在任何情况下处理任何图像近距离采集不如leres精细
+      模型（必须）：control_v11f1p_sd15_depth.pth，同名yaml文件
 
-    - depth_anything
-
-        ​	最新模型，目标是建立一个简单而强大的基础模型，在任何情况下处理任何图像
-
-    模型（必须）：control_v11f1p_sd15_depth.pth，同名yaml文件
 
 3. **姿态(OpenPose)**
 
-    专门用来提取/使用人物动作，捕捉人物骨骼，以及表情。非常有效的解决AI画不好手的问题，但是也挺麻烦
+      专门用来提取/使用人物动作，捕捉人物骨骼，以及表情。非常有效的解决AI画不好手的问题，但是也挺麻烦
 
-    editor插件能编辑骨骼，识别的也还行，但是好麻烦。
+      editor插件能编辑骨骼，识别的也还行，但是好麻烦。
 
-    
-
-    
-
-    
-
-    
