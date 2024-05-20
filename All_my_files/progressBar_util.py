@@ -2,8 +2,9 @@
 测试，根据sd-webui的api来显示进度条
 工具文件
 """
-import requests
 import time
+from utils import Utils
+from tqdm import tqdm
 
 
 def second2time(second):
@@ -18,19 +19,32 @@ def second2time(second):
 
 
 class ProgressBar:
-    def __init__(self, port=7860):
-        """
-
-        :param port:sd默认端口7860，加--nowebui 端口是7861
-        """
-        self.port = port
-        self.url = r"http://127.0.0.1:" + str(port)
-        self.progress_url = self.url + r"/sdapi/v1/progress"
+    def __init__(self, thread, root_url, image_data):
+        self.thread = thread
         self.response = None
+        self.utils = Utils(root_url)
+        self.image_data = image_data
 
     def show_progress(self):
-        progress = requests.get(self.progress_url).json()
-        progress_percentage = progress["progress"]
-        eta = progress["eta_relative"]
-        print("Progress: ", round(progress_percentage * 100, 1), "%", "\tETA: ", second2time(eta))
-        time.sleep(1)  # 休眠一秒
+        try:
+            total = self.image_data['steps'] * self.image_data['n_iter'] * self.image_data['batch_size']
+            # 进度条的总值
+            with tqdm(total=total) as pbar:
+                while self.thread.is_alive():
+                    progress = self.utils.get_progress()  # dict
+                    progress_percentage = progress["progress"]
+                    eta = progress["eta_relative"]
+                    job_count = progress["state"]["job_count"]
+                    job_no = progress["state"]["job_no"]
+
+                    # 更新进度条
+                    pbar.n = int(progress_percentage * total)
+                    pbar.set_description(f"ETA: {second2time(eta)} | {job_no}/{job_count}")
+                    pbar.refresh()
+
+                    time.sleep(1)  # 休眠1秒
+        except KeyError:
+            print("No progress data")
+            while self.thread.is_alive():
+                time.sleep(1)
+            pass
