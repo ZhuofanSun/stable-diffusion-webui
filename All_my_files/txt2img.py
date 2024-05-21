@@ -1,7 +1,8 @@
+import time
+
 from generate_uitl import Generate
 import datafile as data
 from utils import Utils
-import gc
 
 utils = Utils()
 
@@ -40,8 +41,14 @@ def txt2img_test_vae(data):
 
 
 def main():
-    # 启动webui
-    # utils.start_webui()
+    # 检查webui能否访问，不能访问就启动webui
+    if not utils.check_check_url():
+        # 没连通就启动webui脚本
+        # TODO: 脚本启动过程中
+        print("-" * 20, "webui，启动！", "-" * 20)
+        utils.start_webui()
+    else:
+        print("webui 运行中")
 
     """
     浏览器输入localhost:7860可以看到webui,
@@ -70,7 +77,7 @@ def main():
     # generate.generate(url=utils.get_txt2img_url(), image_data=imp_data, images_name='imp')
 
     # depth test --------------------------------------
-    generate.generate(url=utils.get_controlnet_detect_url(), image_data=depth_data, images_name='depth')
+    # generate.generate(url=utils.get_controlnet_detect_url(), image_data=depth_data, images_name='depth')
 
     print("Running memory leak test")
     leak_data = data.get_leak()
@@ -102,22 +109,26 @@ if __name__ == '__main__':
     try:
         main()
         utils.kill_script()
-        # Print the number of objects known by the collector, before and after a collection
-        print("Objects before collection: ", gc.get_count())
-        gc.collect()
-        print("Objects after collection: ", gc.get_count())
+        utils.mem_collect()
+        print("正常结束？")
+
+    except ConnectionError as e:
+        print(e)
+        print("*" * 40, "连接问题，检查 webui.sh --api 执行情况", "*" * 40)
+        utils.kill_script()  # 结束脚本
+        utils.mem_collect()
 
     except Exception as e:
         print(e)
         utils.kill_script()  # 结束脚本
-        # Print the number of objects known by the collector, before and after a collection
-        print("Objects before collection: ", gc.get_count())
-        gc.collect()
-        print("Objects after collection: ", gc.get_count())
-    except KeyboardInterrupt as k:
-        print(k)
+        utils.mem_collect()
+
+    except KeyboardInterrupt:
+        print("*" * 40, "  KeyboardInterrupt  ", "*" * 40)
+        time.sleep(1)  # TODO：不加这个在下面结束脚本时会连着pycharm一起杀掉，抽象
         utils.kill_script()  # 结束脚本
-        # Print the number of objects known by the collector, before and after a collection
-        print("Objects before collection: ", gc.get_count())
-        gc.collect()
-        print("Objects after collection: ", gc.get_count())
+        utils.mem_collect()
+
+    except:
+        print("*" * 40, "  Unknown Error  ", "*" * 40)
+        utils.kill_script()

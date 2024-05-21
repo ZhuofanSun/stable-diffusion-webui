@@ -1,11 +1,15 @@
 import base64
 import os
+import signal
 import time
 from datetime import date
 import PIL.Image as Image
 import io
 import requests
 import subprocess
+import gc
+import socket
+from urllib.parse import urlparse
 
 
 class Utils:
@@ -54,21 +58,35 @@ class Utils:
         # 返回进程对象，以便以后结束脚本
         return self.process
 
+    def kill_process(self, process):
+        if self.process is not None:
+            try:
+                # 获取进程组 ID
+                pgid = os.getpgid(self.process.pid)
+                # 发送 SIGTERM 信号以尝试优雅终止进程
+                os.killpg(pgid, signal.SIGTERM)
+                self.process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                # 如果进程没有在指定时间内终止，发送 SIGKILL 信号
+                print("Process killed with SIGKILL.")
+                os.killpg(pgid, signal.SIGKILL)
+                self.process.wait()
+            except Exception as e:
+                print(f"Failed to kill process group: {e}")
+
+            print("-" * 20, "Process terminated.", "-" * 20)
+            self.process = None  # 清空 process 引用以释放资源
+        else:
+            print("-" * 20, "No process to kill.", "-" * 20)
+
     def kill_script(self, process=None):
         """
         结束进程
         :param process: 进程对象
         :return: None
         """
-        if process is None:
-            process = self.process
-        if self.process is None:
-            print("-"*20, "No process to kill.", "-"*20)
-            return
-        if process:
-            process.terminate()
-            process.wait()
-            print("-"*20, "Process terminated.", "-"*20)
+        self.kill_process(process)
+        self.kill_process(self.process)
 
     def to_filename_depth(self, file_path):
         filename = os.path.basename(file_path)
@@ -156,6 +174,49 @@ class Utils:
         current_date = date.today()
         # 格式化 yyyy-mm-dd
         return current_date.strftime("%Y-%m-%d")
+
+    def mem_collect(self):
+        # Print the number of objects known by the collector, before and after a collection
+        print("Objects before collection: ", gc.get_count())
+        gc.collect()
+        print("Objects after collection: ", gc.get_count())
+
+    def check_check_url(self, url=None):
+        """
+        查看root_url的端口连通性
+        :return: True/False
+        """
+        if url is None:
+            url = self.root
+
+        try:
+            print(f"检查连接{url}")
+            # 解析 URL
+            parsed_url = urlparse(url)
+            host = parsed_url.hostname
+            port = parsed_url.port
+
+            # 使用 socket 检查端口是否开放
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(1)  # 设置超时时间为1秒
+                s.connect((host, port))
+
+            # 使用 requests 检查 URL 的响应
+            response = requests.get(url)
+            if response.status_code == 200 and response.json().get('detail') != "Not Found":
+                print("连接成功")
+                return True
+            else:
+                print("连接失败")
+                return False
+
+        except (socket.timeout, ConnectionRefusedError):
+            print("连接失败")
+            return False
+        except requests.RequestException:
+            return True
+        except Exception as e:
+            print(e)
 
     def get_txt2img_url(self):
         return self.txt2img_url

@@ -43,7 +43,16 @@ class Generate:
 
     def submit_post(self, url: str, data: dict):
         """向url发送post请求"""
-        self.response = requests.post(url, data=json.dumps(data))
+        try:
+            self.response = requests.post(url, data=json.dumps(data))
+        except requests.exceptions.RequestException as e:
+            # 连接导致的
+            print(e)
+            print("*" * 40, "  ConnectionRefusedError  ", "*" * 40)
+            print(f"向{url}发送post请求失败")
+            print("*" * 40, "  ConnectionRefusedError  ", "*" * 40)
+            self.utils.kill_script()  # 结束脚本
+            self.utils.mem_collect()
 
     def generate(self, url, image_data, images_name):
         """
@@ -59,6 +68,10 @@ class Generate:
         """
 
         today = self.utils.get_today_date()  # yyyy-mm-dd
+
+        # check api:
+        if not self.utils.check_check_url(url):
+            raise ConnectionError(f"url: {url} 连接失败")
 
         # 图片生成放入新线程，主线程打印progress信息
         # target：在新线程中运行的函数

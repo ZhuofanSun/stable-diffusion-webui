@@ -45,6 +45,9 @@ class ProgressBar:
                     time.sleep(1)  # 休眠1秒
         except KeyError:
             print("No progress data")
+            clock = 0
             while self.thread.is_alive():
+                print(f"Time elapsed: {second2time(clock)}")
                 time.sleep(1)
+                clock += 1
             pass
