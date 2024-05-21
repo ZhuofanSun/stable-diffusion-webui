@@ -40,6 +40,9 @@ def txt2img_test_vae(data):
 
 
 def main():
+    # 启动webui
+    # utils.start_webui()
+
     """
     浏览器输入localhost:7860可以看到webui,
     http://127.0.0.1:7860/docs可以查看API文档，对应修改下面的json参数
@@ -52,19 +55,19 @@ def main():
 
     imp_data = data.get_imp("/Users/sunzhuofan/sdai/my_sd_webui/outputs/img2img-images/2024-05-17/00000-2888002140.jpg")
 
-    # TODO: 文件夹里图片太多会报错
-    depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test", multi=True)
+    # TODO: 文件夹里图片太多会报错  最多九张
+    depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/2024-05-21", multi=True)
     # tests ----------------------------------------
     # txt2img_test_cfg(angelMiku_data)
     # txt2img_test_model(angelMiku_data)
     # txt2img_test_vae(girInCar_data)
 
     # normal test ----------------------------------
-    generate.set_clip(2)
-    generate.set_model('cetusMix_Codaedition.safetensors [bd518b9aee]')
-    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
-    generate.post_option()
-    generate.generate(url=utils.get_txt2img_url(), image_data=imp_data, images_name='imp')
+    # generate.set_clip(2)
+    # generate.set_model('cetusMix_Codaedition.safetensors [bd518b9aee]')
+    # generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    # generate.post_option()
+    # generate.generate(url=utils.get_txt2img_url(), image_data=imp_data, images_name='imp')
 
     # depth test --------------------------------------
     generate.generate(url=utils.get_controlnet_detect_url(), image_data=depth_data, images_name='depth')
@@ -96,8 +99,25 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # Print the number of objects known by the collector, before and after a collection
-    print("Objects before collection: ", gc.get_count())
-    gc.collect()
-    print("Objects after collection: ", gc.get_count())
+    try:
+        main()
+        utils.kill_script()
+        # Print the number of objects known by the collector, before and after a collection
+        print("Objects before collection: ", gc.get_count())
+        gc.collect()
+        print("Objects after collection: ", gc.get_count())
+
+    except Exception as e:
+        print(e)
+        utils.kill_script()  # 结束脚本
+        # Print the number of objects known by the collector, before and after a collection
+        print("Objects before collection: ", gc.get_count())
+        gc.collect()
+        print("Objects after collection: ", gc.get_count())
+    except KeyboardInterrupt as k:
+        print(k)
+        utils.kill_script()  # 结束脚本
+        # Print the number of objects known by the collector, before and after a collection
+        print("Objects before collection: ", gc.get_count())
+        gc.collect()
+        print("Objects after collection: ", gc.get_count())

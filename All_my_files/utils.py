@@ -1,9 +1,11 @@
 import base64
 import os
+import time
 from datetime import date
 import PIL.Image as Image
 import io
 import requests
+import subprocess
 
 
 class Utils:
@@ -17,6 +19,56 @@ class Utils:
         self.controlnet_moduleList_url = url_root + '/controlnet/module_list'
         self.controlnet_controlSettings_url = url_root + '/controlnet/settings'
         self.controlnet_detect_url = url_root + '/controlnet/detect'
+        self.process = None
+
+    def start_webui(self, script_name="webui.sh", args=["--api"]):
+        """
+        启动工作目录前一层文件夹里的webui.sh脚本
+        :param script_name: 脚本名称
+        :param args: 脚本参数
+        :return: 进程对象
+        """
+        print('-' * 20, "正在执行 `../webui.sh --api` ...", '-' * 20)
+        print()
+        # 获取当前工作目录上一层的目录
+        script_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        # 构建脚本路径
+        script_path = os.path.join(script_dir, script_name)
+
+        # 启动脚本，并重定向标准输出和标准错误输出
+        self.process = subprocess.Popen(['bash', script_path] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                        text=True,
+                                        cwd=script_dir)
+
+        # 实时读取输出
+        while True:
+            output = self.process.stdout.readline()
+            if output:
+                print(output.strip())
+                if "Running on local URL:" in output:
+                    break
+
+        print('-' * 20, "sd-webui api 已启动", '-' * 20)
+        time.sleep(5)  # 等待5秒
+
+        # 返回进程对象，以便以后结束脚本
+        return self.process
+
+    def kill_script(self, process=None):
+        """
+        结束进程
+        :param process: 进程对象
+        :return: None
+        """
+        if process is None:
+            process = self.process
+        if self.process is None:
+            print("-"*20, "No process to kill.", "-"*20)
+            return
+        if process:
+            process.terminate()
+            process.wait()
+            print("-"*20, "Process terminated.", "-"*20)
 
     def to_filename_depth(self, file_path):
         filename = os.path.basename(file_path)

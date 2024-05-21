@@ -1,5 +1,5 @@
 import os
-
+import warnings
 from utils import Utils
 
 utils = Utils()
@@ -130,11 +130,16 @@ def get_imp(file_path):
 def get_file_depth(file_path, multi=False):
     if multi:
         # get files in the folder
+        total = 0  # 总数
         files = os.listdir(file_path)
         files_encoded = []
         for file in files:
-            encoded_image = utils.read_image_to_base64(os.path.join(file_path, file))
-            files_encoded.append(encoded_image)
+            if total < 9:
+                encoded_image = utils.read_image_to_base64(os.path.join(file_path, file))
+                files_encoded.append(encoded_image)
+                total += 1
+            else:
+                warnings.warn("Too many files in the folder, only 9 files will be used.")
         files = files_encoded
 
     else:
