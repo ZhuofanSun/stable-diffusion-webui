@@ -128,35 +128,45 @@ def get_imp(file_path):
 
 
 def get_file_depth(file_path, multi=False):
+    encoded_files_list = []
     if multi:
         # get files in the folder
-        total = 0  # 总数
-        files = os.listdir(file_path)
-        files_encoded = []
-        for file in files:
-            if total < 9:
+        all_files = os.listdir(file_path)
+        print(f"Encoding {len(all_files)} files...\n")
+        # 文件夹下所有文件每9个分一组，组成一个列表
+        for i in range(0, len(all_files), 9):
+            files = all_files[i:i+9]  # 列表切片的结束索引超过长度也不会报错，只会返回到最后一个元素
+
+            files_encoded = []
+            for file in files:
                 encoded_image = utils.read_image_to_base64(os.path.join(file_path, file))
                 files_encoded.append(encoded_image)
-                total += 1
+
+            encoded_files_list.append(files_encoded)
+            if i + 9 + 1 < len(all_files):
+                print(f"File {i+1} to File {i+9+1} Done!\n")
             else:
-                warnings.warn("Too many files in the folder, only 9 files will be used.")
-        files = files_encoded
+                print(f"File {i+1} to File {len(all_files)} Done!\n")
 
     else:
         encoded_image = utils.read_image_to_base64(file_path)
         files = [encoded_image]
+        encoded_files_list.append(files)
 
-    file_depth_data = {
-        "controlnet_module": 'depth_leres++',
-        "controlnet_input_images": files,
-        "controlnet_processor_res": 512,
-        "controlnet_threshold_a": 0,
-        "controlnet_threshold_b": 20,
-        "controlnet_masks": [],
-        "low_vram": 'false'
-    }
+    depth_data_list = []
+    for encoded_files in encoded_files_list:
+        file_depth_data = {
+            "controlnet_module": 'depth_anything',
+            "controlnet_input_images": encoded_files,
+            "controlnet_processor_res": 512,
+            "controlnet_threshold_a": 0,
+            "controlnet_threshold_b": 20,
+            "controlnet_masks": [],
+            "low_vram": 'false'
+        }
+        depth_data_list.append(file_depth_data)
 
-    return file_depth_data
+    return depth_data_list
 
 
 def get_leak():

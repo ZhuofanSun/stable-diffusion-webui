@@ -42,7 +42,9 @@ class Utils:
         # 启动脚本，并重定向标准输出和标准错误输出
         self.process = subprocess.Popen(['bash', script_path] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                         text=True,
-                                        cwd=script_dir)
+                                        cwd=script_dir,
+                                        preexec_fn=os.setsid  # 将子进程放入新的进程组，否则可能连着pycharm一起关闭
+                                        )
 
         # 实时读取输出
         while True:
@@ -59,23 +61,25 @@ class Utils:
         return self.process
 
     def kill_process(self, process):
-        if self.process is not None:
+        if process is not None:
             try:
                 # 获取进程组 ID
-                pgid = os.getpgid(self.process.pid)
+                pgid = os.getpgid(process.pid)
                 # 发送 SIGTERM 信号以尝试优雅终止进程
+                # 检查进程组名称（可选，根据具体需求）
+                # pgid_name = get_process_group_name(pgid)  # 自行实现获取进程组名称的方法
                 os.killpg(pgid, signal.SIGTERM)
-                self.process.wait(timeout=10)
+                process.wait(timeout=3)
             except subprocess.TimeoutExpired:
                 # 如果进程没有在指定时间内终止，发送 SIGKILL 信号
                 print("Process killed with SIGKILL.")
                 os.killpg(pgid, signal.SIGKILL)
-                self.process.wait()
+                process.wait()
             except Exception as e:
                 print(f"Failed to kill process group: {e}")
 
             print("-" * 20, "Process terminated.", "-" * 20)
-            self.process = None  # 清空 process 引用以释放资源
+            process = None  # 清空 process 引用以释放资源
         else:
             print("-" * 20, "No process to kill.", "-" * 20)
 
@@ -85,9 +89,23 @@ class Utils:
         :param process: 进程对象
         :return: None
         """
+        print("*"*40, "即将结束脚本", "*"*40)
+        input("按 回车键 继续...")
         self.kill_process(process)
         self.kill_process(self.process)
 
+    def wait_5_secondes(self):
+        print("5")
+        time.sleep(1)
+        print("4")
+        time.sleep(1)
+        print("3")
+        time.sleep(1)
+        print("2")
+        time.sleep(1)
+        print("1")
+        time.sleep(1)
+        print("0")
     def to_filename_depth(self, file_path):
         filename = os.path.basename(file_path)
         name = os.path.splitext(filename)[0]
@@ -176,6 +194,7 @@ class Utils:
         return current_date.strftime("%Y-%m-%d")
 
     def mem_collect(self):
+        print("\n内存回收：")
         # Print the number of objects known by the collector, before and after a collection
         print("Objects before collection: ", gc.get_count())
         gc.collect()
@@ -203,7 +222,7 @@ class Utils:
 
             # 使用 requests 检查 URL 的响应
             response = requests.get(url)
-            if response.status_code == 200 and response.json().get('detail') != "Not Found":
+            if response.json().get('detail') != "Not Found":
                 print("连接成功")
                 return True
             else:
@@ -269,3 +288,6 @@ class Utils:
     def get_progress(self):
         response = requests.get(self.progress_url)
         return response.json()
+
+    def get_process(self):
+        return self.process

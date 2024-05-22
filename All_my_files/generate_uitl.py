@@ -8,7 +8,7 @@ from utils import Utils
 
 class Generate:
     def __init__(self, root_url=r'http://127.0.0.1:7860'):
-        self.response = None  # 储存向sd-webui发送请求后的响应
+        self.response = []  # 储存向sd-webui发送请求后的响应
         self.option_data = {}  # 用于存储选项数据
         self.utils = Utils(root_url)
         self.root_url = root_url
@@ -41,10 +41,16 @@ class Generate:
 
         requests.post(url=self.utils.get_options_url(), json=self.option_data)
 
-    def submit_post(self, url: str, data: dict):
+    def submit_post(self, url, data):
         """向url发送post请求"""
         try:
-            self.response = requests.post(url, data=json.dumps(data))
+            if isinstance(data, dict):
+                self.response.append(requests.post(url, data=json.dumps(data)))
+            elif isinstance(data, list):
+                for i in data:
+                    self.response.append(requests.post(url, data=json.dumps(i)))
+            else:
+                raise TypeError("data must be dict or list")
         except requests.exceptions.RequestException as e:
             # 连接导致的
             print(e)
@@ -88,20 +94,26 @@ class Generate:
         if images_name == 'leak':
             return
 
-        print(self.response.json())
-
         # response = submit_post(txt2img_url, imp_data)  # 在这里生成图片
-        try:
-            for i in range(image_data['batch_size'] * image_data['n_iter']):  # No. 图片 = batch_size * n_iter
-                save_image_name = images_name + str(index_available + i) + '.png'  # 文件名
-                save_image_path = os.path.join('outputs', today, save_image_name)  # 文件路径
 
-                # 存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
-                self.utils.save_encoded_image(self.response.json()['images'][i], save_image_path)  # 编码并保存图片
-        except KeyError:
-            for i in range(len(image_data['controlnet_input_images'])):
-                save_image_name = images_name + str(index_available + i) + '.png'  # 文件名
-                save_image_path = os.path.join('outputs', today, save_image_name)  # 文件路径
+        curr = 0
+        total = len(image_data)
+        for data in image_data:
+            print(f"当前保存批次：{curr+1}/{total}")
+            try:
+                for i in range(data['batch_size'] * data['n_iter']):  # No. 图片 = batch_size * n_iter
+                    print(self.response[curr].json()['images'][i])
+                    save_image_name = images_name + str(index_available + i) + '.png'  # 文件名
+                    save_image_path = os.path.join('outputs', today, save_image_name)  # 文件路径
 
-                # 存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
-                self.utils.save_encoded_image(self.response.json()['images'][i], save_image_path)  # 编码并保存图片
+                    # 存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
+                    self.utils.save_encoded_image(self.response[curr].json()['images'][i], save_image_path)  # 编码并保存图片
+            except KeyError:
+                for i in range(len(data['controlnet_input_images'])):
+                    print(self.response[curr].json()['images'][i])
+                    save_image_name = images_name + str(index_available + i) + '.png'  # 文件名
+                    save_image_path = os.path.join('outputs', today, save_image_name)  # 文件路径
+
+                    # 存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
+                    self.utils.save_encoded_image(self.response[curr].json()['images'][i], save_image_path)  # 编码并保存图片
+            curr += 1

@@ -17,7 +17,7 @@
 4. **[Stable diffusion](#Stable-diffusion)**
     - **[从automatic1111获取更新](#从automatic1111获取更新)**
     - **[Models/Lora/Plugin/VAE](#modelslorapluginvae)**
-    - **[图片放大](#controlnet图片放大)**
+    - **[图片x放大](#controlnet图片放大)**
     - **[采样器&噪声](#采样器噪声)**
     - **[ControlNet](#controlnet)**
 
