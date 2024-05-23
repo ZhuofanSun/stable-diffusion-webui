@@ -63,7 +63,7 @@ def main():
     )
     # TODO: 一次调用api最多处理9张，否则报错
     # TODO：进行判断，如果大于5张，就分批处理 <- 一次9张api也有概率报错，干脆5张
-    depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test", multi=True)
+    # depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test", multi=True)
 
     # tests ----------------------------------------
     # txt2img_test_cfg(angelMiku_data)
@@ -71,14 +71,15 @@ def main():
     # txt2img_test_vae(girInCar_data)
 
     # normal test ----------------------------------
-    # generate.set_clip(2)
-    # generate.set_model('cetusMix_Codaedition.safetensors [bd518b9aee]')
-    # generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
-    # generate.post_option()
-    # generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
+    data.add_ad(imp_data[0], 'imp,seductive_smile')
+    generate.set_clip(2)
+    generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    generate.post_option()
+    generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
 
     # depth test --------------------------------------
-    generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
+    # generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
 
     print("Running memory leak test")
     leak_data = data.get_leak()

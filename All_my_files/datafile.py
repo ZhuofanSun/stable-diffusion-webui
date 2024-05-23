@@ -7,8 +7,6 @@ model:
 'abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
 'cetusMix_Codaedition.safetensors [bd518b9aee]',
 'counterfeitV30_v30.safetensors [17277fbe68]',
-'hassakuHentaiModel_v13.safetensors [7eb674963a]',
-'meinahentai_v4.safetensors [8145104977]',
 'meinamix_meinaV10.safetensors [d967bcae4a]'
 
 ## ControlNet 模型 & 预处理器:
@@ -28,7 +26,21 @@ model:
     'openpose'            # 仅姿态
     'openpose_hand'       # 姿态+手部
     'dw_openpose_full'    # dwpose算法，姿态+面部+手
-
+    
+ADetailer 模型：
+    'face_yolov8n.pt'       # 2D / 真实人脸 nano
+    'face_yolov8s.pt'       # 2D / 真实人脸 small
+    'face_yolov8m.pt'       # 2D / 真实人脸 medium
+    'hand_yolov8n.pt'       # 2D / 真实人手 nano
+    'hand_yolov9c.py'       # 2D / 真实人手
+    'person_yolov8n-seg.pt' # 2D / 真实全身 
+    'person_yolov8s-seg.pt' # 2D / 真实全身
+    'yolov8x-worldv2.pt'    # 2D / 世界
+    'mediapipe_face_full'   # 真实人脸
+    'mediapipe_face_short'  # 真实人脸
+    'mediapipe_face_mesh'   # 立体 / 真实人脸 
+    'mediapipe_face_mesh_eyes_only'  # 眼睛
+    'None'
 """
 
 
@@ -82,16 +94,17 @@ def get_imp(file_path):
 
     imp_data = {
         # 正向提示词
-        'prompt': '1girl,imp,little_demon,anime sytle,<lora:add_detail:0.6>,4K,'
+        'prompt': '1girl,imp,little_demon,anime sytle,4K,'
                   '(best illumination, an extremely delicate and beautiful),hyper detail,'
-                  'best quality,high resolution,seductive_smile,naughty_face,',
+                  'best quality,high resolution,seductive_smile,naughty_face,(masterpiece, best quality, '
+                  'ultra-detailed, best shadow)',
         # 反向提示词
         'negative_prompt': '<lora:easynegative:1>,blurry,low quality,lowres,normal quality,'
                            'worstquality,bad proportions,bad body,long body,long neck,deformed,ugly,'
                            'extra limb,disconnected limbs,poorly drawn hands,',
         'sampler_index': 'DPM++ 2M',  # 采样器
         'scheduler': 'Karras',  # 噪声调度器
-        'n_iter': 4,  # 生成批次
+        'n_iter': 2,  # 生成批次
         'batch_size': 1,  # 每次张数  提升这个数值会显著增加使用内存
         'seed': -1,  # 种子
         'steps': 20,  # 步数
@@ -170,6 +183,56 @@ def get_file_depth(file_path, multi=False):
         depth_data_list.append(file_depth_data)
 
     return depth_data_list
+
+
+def add_ad(data, prompt="", neg_prompt=""):
+    """
+    给一个图片data数据添加adetailer优化
+    :param data: 图片信息json文件
+    :param prompt: 附加正面提示词
+    :param neg_prompt: 附加负面提示词
+    :return: 加入adetailer优化后的图片信息json文件
+    """
+
+    if not isinstance(data, dict):
+        raise ValueError("data必须是字典/json")
+    ad_data = {
+        "args": [
+            'true',  # 开启 ADetailer
+            'false',  # 跳过 img2img
+            {
+                "ad_tap_enable": 'true',  # 开启当前tap，这样的优化（args列表加更多的字典）可以开多个
+                "ad_model": "face_yolov8s.pt",  # AD模型
+                "ad_prompt": prompt + ",detailed,best quality,"
+                                      "(beautiful detailed face),beautiful eyes,digital painting,",  # ad的正面提示词，空着就是用图片的
+                "ad_negative_prompt": neg_prompt + ",(low quality:1.4),bad eyes,(oil painting),(brush strokes),"
+                                                   "(greyscale:1.2),(worst quality:1.4),(monochrome:1.1),lowres,"
+                                                   "worstquality,mutated,grayscale,sketches,spot_color,"
+                                                   "chromatic_aberration,"
+                                                   "black and white,<lora:easynegative:0.6>,",  # 负面同理
+                "ad_denoising_strength": 0.4,  # 重绘幅度
+
+                "ad_confidence": 0.7,  # 高于ai识别置信度的才会重绘，多目标重绘可以用
+                "ad_use_inpaint_width_height": 'false',  # 单独设置inpaint的宽高
+                "ad_inpaint_width": 512,
+                "ad_inpaint_height": 512,
+                "ad_use_steps": 'false',  # 单独设置步数
+                "ad_steps": 28,
+                "ad_use_cfg_scale": 'false',  # 单独设置cfg
+                "ad_cfg_scale": 7.0,
+                "ad_use_checkpoint": 'false',  # 单独设置模型
+                "ad_checkpoint": "Use same checkpoint",
+                "ad_use_vae": 'false',  # 单独设置vae
+                "ad_vae": "Use same VAE",
+                "ad_use_sampler": 'false',  # 单独设置采样器
+                "ad_sampler": "DPM++ 2M Karras",
+                "ad_use_clip_skip": 'false',  # 单独设置clip
+                "ad_clip_skip": 1,
+            }
+        ]
+    }
+    # 由于字典是可变对象，直接修改就行
+    data["alwayson_scripts"]["ADetailer"] = ad_data
 
 
 def get_leak():

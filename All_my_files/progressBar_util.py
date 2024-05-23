@@ -32,7 +32,7 @@ class ProgressBar:
             raise ValueError("image_data必须是字典/json")
 
         try:
-            print(f"当前处理批次： {batch}/{total} ")
+            print(f"当前处理批次： {batch+1}/{total} ")
 
             total = self.image_data['steps'] * self.image_data['n_iter'] * self.image_data['batch_size']
             # 进度条的总值
