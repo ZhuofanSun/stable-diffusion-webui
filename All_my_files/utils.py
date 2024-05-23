@@ -89,16 +89,12 @@ class Utils:
         :param process: 进程对象
         :return: None
         """
-        print("*"*40, "即将结束脚本", "*"*40)
-        input("按 回车键 继续...")
+        print("-" * 40, "即将结束脚本", "-" * 40)
+
         self.kill_process(process)
         self.kill_process(self.process)
 
-    def wait_5_secondes(self):
-        print("5")
-        time.sleep(1)
-        print("4")
-        time.sleep(1)
+    def wait_3_secondes(self):
         print("3")
         time.sleep(1)
         print("2")
@@ -106,6 +102,7 @@ class Utils:
         print("1")
         time.sleep(1)
         print("0")
+
     def to_filename_depth(self, file_path):
         filename = os.path.basename(file_path)
         name = os.path.splitext(filename)[0]

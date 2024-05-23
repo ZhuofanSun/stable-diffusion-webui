@@ -1,5 +1,4 @@
 import os
-import warnings
 from utils import Utils
 
 utils = Utils()
@@ -52,7 +51,7 @@ def get_angel_miku():
         'height': 684,  # 高度
         'cfg_scale': 7  # 引导词规模
     }
-    return angelMiku_data
+    return [angelMiku_data]
 
 
 def get_girl_in_car():
@@ -75,7 +74,7 @@ def get_girl_in_car():
         'height': 512,  # 高度
         'cfg_scale': 10  # 引导词规模
     }
-    return girlInCar_data
+    return [girlInCar_data]
 
 
 def get_imp(file_path):
@@ -124,7 +123,7 @@ def get_imp(file_path):
             }
         }
     }
-    return imp_data
+    return [imp_data]
 
 
 def get_file_depth(file_path, multi=False):
@@ -133,20 +132,24 @@ def get_file_depth(file_path, multi=False):
         # get files in the folder
         all_files = os.listdir(file_path)
         print(f"Encoding {len(all_files)} files...\n")
-        # 文件夹下所有文件每9个分一组，组成一个列表
-        for i in range(0, len(all_files), 9):
-            files = all_files[i:i+9]  # 列表切片的结束索引超过长度也不会报错，只会返回到最后一个元素
+        # 文件夹下所有文件每5个分一组，组成一个列表
+        for i in range(0, len(all_files), 5):
+            files = all_files[i:i + 5]  # 列表切片的结束索引超过长度也不会报错，只会返回到最后一个元素
 
             files_encoded = []
+            print("Encoding files: ")
+            index = 0
             for file in files:
+                print(i + index + 1, end='  ')
                 encoded_image = utils.read_image_to_base64(os.path.join(file_path, file))
                 files_encoded.append(encoded_image)
+                index += 1
 
             encoded_files_list.append(files_encoded)
-            if i + 9 + 1 < len(all_files):
-                print(f"File {i+1} to File {i+9+1} Done!\n")
+            if i + 5 + 1 < len(all_files):
+                print(f"\nFile {i + 1} to File {i + 5 + 1} Done!\n")
             else:
-                print(f"File {i+1} to File {len(all_files)} Done!\n")
+                print(f"\nFile {i + 1} to File {len(all_files)} Done!\n")
 
     else:
         encoded_image = utils.read_image_to_base64(file_path)
@@ -159,10 +162,10 @@ def get_file_depth(file_path, multi=False):
             "controlnet_module": 'depth_anything',
             "controlnet_input_images": encoded_files,
             "controlnet_processor_res": 512,
-            "controlnet_threshold_a": 0,
-            "controlnet_threshold_b": 20,
+            # "controlnet_threshold_a": 0,
+            # "controlnet_threshold_b": 0,
             "controlnet_masks": [],
-            "low_vram": 'false'
+            "low_vram": 'true'
         }
         depth_data_list.append(file_depth_data)
 
@@ -182,8 +185,8 @@ def get_leak():
         'n_iter': 1,  # 每批n个
         'seed': -1,  # 种子
         'steps': 5,  # 步数
-        'width': 128,  # 宽度
-        'height': 128,  # 高度
+        'width': 64,  # 宽度
+        'height': 64,  # 高度
         'cfg_scale': 7  # 引导词规模
     }
-    return leak_data
+    return [leak_data]
