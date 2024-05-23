@@ -210,7 +210,7 @@ def add_ad(data, prompt="", neg_prompt=""):
                                                    "worstquality,mutated,grayscale,sketches,spot_color,"
                                                    "chromatic_aberration,"
                                                    "black and white,<lora:easynegative:0.6>,",  # 负面同理
-                "ad_denoising_strength": 0.4,  # 重绘幅度
+                "ad_denoising_strength": 0.25,  # 重绘幅度
 
                 "ad_confidence": 0.7,  # 高于ai识别置信度的才会重绘，多目标重绘可以用
                 "ad_use_inpaint_width_height": 'false',  # 单独设置inpaint的宽高
