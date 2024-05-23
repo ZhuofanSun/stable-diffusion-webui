@@ -48,10 +48,6 @@ def main():
     else:
         print("webui 运行中")
 
-    """
-    浏览器输入localhost:7860可以看到webui,
-    http://127.0.0.1:7860/docs可以查看API文档，对应修改下面的json参数
-    """
     generate = Generate()
 
     angelMiku_data = data.get_angel_miku()

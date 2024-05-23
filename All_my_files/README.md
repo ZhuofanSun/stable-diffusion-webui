@@ -17,7 +17,7 @@
 4. **[Stable diffusion](#Stable-diffusion)**
     - **[从automatic1111获取更新](#从automatic1111获取更新)**
     - **[Models/Lora/Plugin/VAE](#modelslorapluginvae)**
-    - **[图片x放大](#controlnet图片放大)**
+    - **[图片放大](#controlnet图片放大)**
     - **[采样器&噪声](#采样器噪声)**
     - **[ControlNet](#controlnet)**
 
@@ -41,7 +41,7 @@
   
     默认从hf本站下载，要用镜像站的话加上：
     
-    ```shel
+    ```shell
     export HF_ENDPOINT=https://hf-mirror.com  # 仅在当前shell生效
     ```
     
@@ -61,15 +61,15 @@
 
     ##### hf_transfer (网不稳定不要用)
     
-    ```shel
+    ```shell
     pip3 install -U hf-transfer  # 安装依赖
     ```
     
-    ```shel
+    ```shell
     export HF_HUB_ENABLE_HF_TRANSFER=1  # 仅在当前shell窗口生效
     ```
     
-    ```shel
+    ```shell
     huggingface-cli download --resume-download <库> --local-dir <本地>  # 方法同cli
     ```
     

@@ -61,7 +61,7 @@ def get_angel_miku():
         'steps': 20,  # 步数
         'width': 512,  # 宽度
         'height': 684,  # 高度
-        'cfg_scale': 7  # 引导词规模
+        'cfg_scale': 7  # 引导词系数
     }
     return [angelMiku_data]
 
@@ -84,7 +84,7 @@ def get_girl_in_car():
         'steps': 25,  # 步数
         'width': 512,  # 宽度
         'height': 512,  # 高度
-        'cfg_scale': 10  # 引导词规模
+        'cfg_scale': 10  # 引导词系数
     }
     return [girlInCar_data]
 
@@ -110,7 +110,7 @@ def get_imp(file_path):
         'steps': 20,  # 步数
         'width': 512,  # 宽度
         'height': 512,  # 高度
-        'cfg_scale': 7,  # 引导词规模
+        'cfg_scale': 7,  # 引导词系数
         # Control Net
         "alwayson_scripts": {
             "controlnet": {
@@ -250,6 +250,6 @@ def get_leak():
         'steps': 5,  # 步数
         'width': 64,  # 宽度
         'height': 64,  # 高度
-        'cfg_scale': 7  # 引导词规模
+        'cfg_scale': 7  # 引导词系数
     }
     return [leak_data]
