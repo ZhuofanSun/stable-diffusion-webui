@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 import requests
 import threading
 from progressBar_util import ProgressBar
@@ -46,6 +48,8 @@ class Generate:
         try:
             if isinstance(data, dict):
                 self.response = requests.post(url, data=json.dumps(data))
+                print("切换模型...")
+                time.sleep(3)
             else:
                 raise TypeError("data must be dict")
         except requests.exceptions.RequestException as e:
@@ -63,9 +67,9 @@ class Generate:
         :param url: 用sd的功能url  eg. r'http://127.0.0.1:7860/sdapi/v1/txt2img'
         :param image_data_list: 这个功能的参数，json格式，'http://127.0.0.1:7860/docs'查看
         :param images_name: 生成的图片名字：eg. miku -> outputs/2024-05-18/miku3.png
-        :return: None
+        :return: 所有生成的文件地址列表
         """
-
+        generated_images_path = []  # 用于存储生成的图片
         today = self.utils.get_today_date()  # yyyy-mm-dd
 
         # check api:
@@ -106,7 +110,7 @@ class Generate:
 
                     # 编码并保存图片，存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
                     self.utils.save_encoded_image(self.response.json()['images'][i], save_image_path)
-
+                    generated_images_path.append(save_image_path)  # 保存文件路径
             # controlnet-depth 图片生成
             except KeyError:
                 for i in range(len(image_data['controlnet_input_images'])):
@@ -124,8 +128,12 @@ class Generate:
                     # 编码并保存图片，存储文件路径：./outputs/yyyy-mm-dd/xxxx.png
                     self.utils.save_encoded_image(self.response.json()['images'][i],
                                                   save_image_path)  # 编码并保存图片
+
+                    generated_images_path.append(save_image_path)  # 虽然可能不会需要，但还是返回吧
                     # 原图保存一份 可选
                     self.utils.save_encoded_image(image_data['controlnet_input_images'][i],
                                                   save_image_path.replace('.png', '_origin.png'))
             print("保存完成！\n")
             curr_batch += 1  # 下一批
+
+        return generated_images_path

@@ -234,6 +234,18 @@ class Utils:
         except Exception as e:
             print(e)
 
+    def get_image_size(self, image_path):
+        """
+        获取图片的尺寸
+        :param image_path: 图片路径
+        :return: 宽，高
+        """
+        if not (os.path.exists(image_path) or os.path.isfile(image_path)):
+            raise FileNotFoundError(f"文件不存在：{image_path}")
+        with Image.open(image_path) as img:
+            width, height = img.size
+            return width, height
+
     def get_txt2img_url(self):
         return self.txt2img_url
 

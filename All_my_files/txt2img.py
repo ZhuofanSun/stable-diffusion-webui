@@ -20,7 +20,8 @@ def txt2img_test_cfg(data_json):
 def txt2img_test_model(data_json):
     generate = Generate()
 
-    for i in ['abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
+    for i in ['aamXLAnimeMix_v10.safetensors [d48c2391e0]'
+              'abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
               'cetusMix_Codaedition.safetensors [bd518b9aee]',
               'counterfeitV30_v30.safetensors [17277fbe68]',
               'meinamix_meinaV10.safetensors [d967bcae4a]']:
@@ -35,7 +36,26 @@ def txt2img_test_vae(data_json):
     for i in [None, 'clearvaeSD15_v23.safetensors', 'klF8Anime2VAE_klF8Anime2VAE.safetensors']:
         generate.set_vae(i)
         generate.post_option()
-        Generate().generate(url=utils.get_txt2img_url(), image_data_list=data_json, images_name='girInCar_testVAE')
+        generate.generate(url=utils.get_txt2img_url(), image_data_list=data_json, images_name='girInCar_testVAE')
+
+
+def txt2img_test_blue():
+    generate = Generate()
+
+    girl_data = data.get_blue_girl()
+
+    leak_data = data.get_leak()
+
+    for _ in range(3):
+        generate.set_model('aamXLAnimeMix_v10.safetensors [d48c2391e0]')
+        generate.set_vae('None')
+        generate.post_option()
+        generate.generate(url=utils.get_txt2img_url(), image_data_list=girl_data, images_name="blue_girl")
+
+        generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+        generate.set_vae('None')
+        generate.post_option()
+        generate.generate(url=utils.get_txt2img_url(), image_data_list=leak_data, images_name="leak")
 
 
 def main():
@@ -50,29 +70,30 @@ def main():
 
     generate = Generate()
 
-    angelMiku_data = data.get_angel_miku()
+    # angelMiku_data = data.get_angel_miku()
 
-    girInCar_data = data.get_girl_in_car()
+    # girInCar_data = data.get_girl_in_car()
 
-    imp_data = data.get_imp(
-        "/Users/sunzhuofan/sdai/my_sd_webui/outputs/img2img-images/2024-05-17/00000-2888002140.jpg"
-    )
+    # imp_data = data.get_imp(
+    #     "/Users/sunzhuofan/sdai/my_sd_webui/outputs/img2img-images/2024-05-17/00000-2888002140.jpg"
+    # )
     # TODO: 一次调用api最多处理9张，否则报错
     # TODO：进行判断，如果大于5张，就分批处理 <- 一次9张api也有概率报错，干脆5张
-    # depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test", multi=True)
+    # depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test")
 
     # tests ----------------------------------------
     # txt2img_test_cfg(angelMiku_data)
     # txt2img_test_model(angelMiku_data)
     # txt2img_test_vae(girInCar_data)
+    txt2img_test_blue()
 
     # normal test ----------------------------------
-    data.add_ad(imp_data[0], 'imp,seductive_smile')
-    generate.set_clip(2)
-    generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
-    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
-    generate.post_option()
-    generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
+    # data.add_ad(imp_data[0], 'imp,seductive_smile')
+    # generate.set_clip(2)
+    # generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    # generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    # generate.post_option()
+    # generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
 
     # depth test --------------------------------------
     # generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')

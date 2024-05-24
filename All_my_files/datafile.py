@@ -4,6 +4,7 @@ from utils import Utils
 utils = Utils()
 """
 model:
+'aamXLAnimeMix_v10.safetensors [d48c2391e0]
 'abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
 'cetusMix_Codaedition.safetensors [bd518b9aee]',
 'counterfeitV30_v30.safetensors [17277fbe68]',
@@ -116,7 +117,7 @@ def get_imp(file_path):
             "controlnet": {
                 "args": [
                     {
-                        "enabled": "true",  # 开启ControNet
+                        "enabled": "true",  # 开启ControlNet
                         "model": 'control_v11f1p_sd15_depth [cfd03158]',
                         "module": "depth_anything",  # 预处理器
                         "weight": "1",  # 权重
@@ -124,8 +125,8 @@ def get_imp(file_path):
                         "resize_mode": 'Crop and Resize',  # Just Resize, Crop and Resize, Resize and Fill
                         "low_vram": "true",
                         "processor_res": 512,  # 预处理器分辨率, 决定了识别输入图片线条的粗细
-                        "threshold_a": 0,  # 阈值A leres++ remove near %
-                        "threshold_b": 0,  # 阈值B leres++ remove background %
+                        "threshold_a": 0,  # 阈值A leres++ remove near % 0～100
+                        "threshold_b": 0,  # 阈值B leres++ remove background % 0～100
                         "guidance_start": 0,  # 开始介入的时机
                         "guidance_end": 1,  # 结束介入的时机
                         "pixel_perfect": "false",  #
@@ -139,7 +140,10 @@ def get_imp(file_path):
     return [imp_data]
 
 
-def get_file_depth(file_path, multi=False):
+def get_file_depth(file_path):
+    # check file_path is a file or a folder
+    multi = False if os.path.isdir(file_path) else True
+
     encoded_files_list = []
     if multi:
         # get files in the folder
@@ -175,8 +179,8 @@ def get_file_depth(file_path, multi=False):
             "controlnet_module": 'depth_anything',
             "controlnet_input_images": encoded_files,
             "controlnet_processor_res": 512,
-            # "controlnet_threshold_a": 0,
-            # "controlnet_threshold_b": 0,
+            # "controlnet_threshold_a": 0,  # 0～100
+            # "controlnet_threshold_b": 0,  # 0～100
             "controlnet_masks": [],
             "low_vram": 'true'
         }
@@ -233,6 +237,130 @@ def add_ad(data, prompt="", neg_prompt=""):
     }
     # 由于字典是可变对象，直接修改就行
     data["alwayson_scripts"]["ADetailer"] = ad_data
+
+
+def get_blue_girl():
+    blue_girl = {
+        # 正向提示词
+        'prompt': 'anime girl,night,blue light behind her,((Galaxy, Lens flare)),short hair,flower field,night sky,'
+                  'cinematic shot. Wallpaper. (Blue color schema),detailed background,a city in the distance,'
+                  '<lora:add_detail:0.4>,4K,high resolution,',
+        # 反向提示词
+        'negative_prompt': 'negativeXL_D,cgi,3d render,bad quality,worst quality,text,signature,watermark,extra limbs,',
+        'sampler_index': 'Euler a',  # 采样器
+        'scheduler': 'Karras',  # 噪声调度器
+        'batch_size': 1,  # 批大小
+        'n_iter': 1,  # 每批n个
+        'seed': -1,  # 种子
+        'steps': 28,  # 步数
+        'width': 970,  # 宽度
+        'height': 970,  # 高度
+        'cfg_scale': 7  # 引导词系数
+    }
+    return [blue_girl]
+
+
+def get_file_upscale(file_path, scale):
+    """
+    返回图片放大的数据
+    :param file_path: 需要放大的图片路径 / 文件夹路径
+    :param scale: 放大倍率
+    :return: 数据列表
+    """
+    def fill_file_data(width, height, base64image):
+        data = {
+            # 正向提示词
+            "prompt": "incredibly absurdres,Sharpen,very high resolution,Anti-blur,Clear lines,Noise reduction,clear_edge,",
+            # 反向提示词
+            "negative_prompt": "(edge_blur:1.3),((dyeing)),((oil painting)),((impasto)),watercolor_(medium),blurry,"
+                               "low quality,normal quality,worstquality,bad proportions,bad body,long body,long neck,"
+                               "deformed,ugly,disfigured,poorly drawn face,extra limb,disconnected limbs,"
+                               "easynegative",
+            "sampler_name": "DPM++ 2M",  # 采样器
+            "scheduler": "Karras",  # 噪声调度器
+            "n_iter": 1,  # 生成批次
+            "batch_size": 1,  # 每次张数  提升这个数值会显著增加使用内存
+            "seed": -1,  # 种子
+            "steps": 20,  # 步数
+            "cfg_scale": 7,  # 引导词系数
+            "width": width * scale,  # doesn't matter in upscaler
+            "height": height * scale,  # doesn't matter in upscaler
+            "denoising_strength": 0.23,  # 重绘幅度
+            # 所有输入的 base64 图片 : 列表
+            "init_images": [
+                base64image
+            ],
+            "resize_mode": 1,  # ["Just resize", "Crop and resize", "Resize and fill", "Just resize (latent upscale)"]
+
+            "script_name": "ultimate sd upscale",
+            # /sdapi/v1/script-info 可以看到所有
+            "script_args": [
+                None,  # _ (not used)
+                # 按照这个tile大小分割图像，太大了占内存
+                512,  # tile_width
+                512,  # tile_height
+                8,  # mask_blur
+                32,  # padding
+                64,  # seams_fix_width
+                0.23,  # seams_fix_denoise  降噪幅度
+                32,  # seams_fix_padding
+                9,  # upscaler_index     # 9是R-ESRGAN 4x+ Anime6B， 3是4x-UltraSharp 看上面的列表
+                'true',  # save_upscaled_image a.k.a Upscaled
+                0,  # redraw_mode 0 是linear
+                'false',  # save_seams_fix_image a.k.a Seams fix
+                8,  # seams_fix_ma2sk_blur
+                0,  # seams_fix_type  None
+                2,  # target_size_type  # 0是根据img2img2设置, 1是自定义, 2是按输入图片倍率
+                width * scale,  # custom_width  上面选1才填这个，否则不重要
+                height * scale,  # custom_height  上面选1才填这个，否则不重要
+                scale  # custom_scale  # 1 ~ 16倍  上面选2才填这个，否则不重要
+            ],
+            "alwayson_scripts": {
+                "controlnet": {
+                    "args": [
+                        {
+                            "enabled": "true",  # 开启ControlNet
+                            "model": 'control_v11f1e_sd15_tile [a371b31b]',
+                            "module": "tile_resample",  # 预处理器
+                            "weight": "1",  # 权重
+                            "resize_mode": 'Crop and Resize',  # Just Resize, Crop and Resize, Resize and Fill
+                            "low_vram": "true",
+                            "processor_res": min(width, height),  # 预处理器分辨率, 决定了识别输入图片线条的粗细
+                            # "threshold_a": 0,
+                            # "threshold_b": 0,
+                            "guidance_start": 0,  # 开始介入的时机
+                            "guidance_end": 1,  # 结束介入的时机
+                            "pixel_perfect": "false",
+                            # "Balanced", "My prompt is more important", "ControlNet is more important"
+                            "control_mode": 'Balanced',
+                            # "Balanced", "My prompt is more important", "ControlNet is more important"
+
+                        }
+                    ]
+                }
+            }
+        }
+        return data
+
+    upscale_data = []
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"文件/文件夹不存在：{file_path}")
+
+    if os.path.isdir(file_path):
+        for image_path in os.listdir(file_path):
+            encoded_image = utils.read_image_to_base64(os.path.join(file_path, image_path))
+            image_width, image_height = utils.get_image_size(os.path.join(file_path, image_path))  # 获取图片大小
+
+            # 创造data并加入列表
+            upscale_data.append(fill_file_data(image_width, image_height, encoded_image))
+
+    else:
+        encoded_image = utils.read_image_to_base64(file_path)
+        image_width, image_height = utils.get_image_size(file_path)
+
+        upscale_data.append(fill_file_data(image_width, image_height, encoded_image))
+
+    return upscale_data
 
 
 def get_leak():
