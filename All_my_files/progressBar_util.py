@@ -59,7 +59,7 @@ class ProgressBar:
                     job_no = progress["state"]["job_no"]
 
                     # 更新进度条
-                    pbar.n = int(progress_percentage * total)
+                    pbar.n = int(progress_percentage * 100)
                     pbar.set_description(f"预估剩余时间: {second2time(eta)} | {job_no}/{job_count}")
                     pbar.refresh()
 

@@ -9,6 +9,34 @@ utils = Utils()
 option_data = {}
 
 
+def txt2img_scale():
+    generate = Generate(utils=utils)
+    girl_in_car = data.get_girl_in_car()
+    data.add_ad_hand(girl_in_car[0], "girl's hand", "bad hand")
+    data.add_ad_face(girl_in_car[0], "detailed face, detailed eyes")
+    data.add_high_resolution(girl_in_car[0], 1.5)
+
+    generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    generate.post_option()
+
+    generated_file = generate.generate(url=utils.get_txt2img_url(),
+                                       image_data_list=girl_in_car,
+                                       images_name="girl_in_car_scale1.5_")
+
+    generated_file = generate.generate(url=utils.get_img2img_url(),
+                                       image_data_list=data.get_file_upscale(generated_file[0], 1.3),
+                                       images_name="girl_in_car_scale1.95_")
+
+    generated_file = generate.generate(url=utils.get_img2img_url(),
+                                       image_data_list=data.get_file_upscale(generated_file[0], 1.3),
+                                       images_name="girl_in_car_scale2.5_")
+
+    generate.generate(url=utils.get_img2img_url(),
+                      image_data_list=data.get_file_upscale(generated_file[0], 2),
+                      images_name="girl_in_car_scale5_")
+
+
 def txt2img_test_cfg(data_json):
     generate = Generate(utils=utils)
 
@@ -70,17 +98,17 @@ def main():
 
     generate = Generate(utils=utils)
 
-    angelMiku_data = data.get_angel_miku()
+    # angelMiku_data = data.get_angel_miku()
 
-    girInCar_data = data.get_girl_in_car()
+    # girInCar_data = data.get_girl_in_car()
 
-    imp_data = data.get_imp(
-        "/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/2024-05-17/00013-3727549206.png"
-    )
+    # imp_data = data.get_imp(
+    #     "/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/2024-05-17/00013-3727549206.png"
+    # )
 
     # TODO: 一次调用api最多处理9张，否则报错
     # TODO：进行判断，如果大于5张，就分批处理 <- 一次9张api也有概率报错，干脆5张
-    depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test")
+    # depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test")
 
     # tests ----------------------------------------
     # txt2img_test_cfg(angelMiku_data)
@@ -89,16 +117,17 @@ def main():
     # txt2img_test_blue()
 
     # normal test ----------------------------------
-    data.add_ad_face(imp_data[0], 'imp,seductive_smile')
-    generate.set_clip(2)
-    generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
-    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
-    generate.post_option()
-    generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
+    # data.add_ad_face(imp_data[0], 'imp,seductive_smile')
+    # generate.set_clip(2)
+    # generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    # generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    # generate.post_option()
+    # generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
 
     # depth test --------------------------------------
-    generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
+    # generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
 
+    txt2img_scale()
     print("Running memory leak test")
     leak_data = data.get_leak()
     generate.generate(url=utils.get_txt2img_url(), image_data_list=leak_data, images_name='leak')

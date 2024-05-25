@@ -172,7 +172,7 @@ def add_ad_hand(data, prompt="", neg_prompt="", skip_img2img=False):
                                            "worstquality,mutated,grayscale,sketches,spot_color,chromatic_aberration,",
         "ad_denoising_strength": 0.5,  # 重绘幅度
 
-        "ad_confidence": 0.4,  # 高于ai识别置信度的才会重绘，多目标重绘可以用
+        "ad_confidence": 0.6,  # 高于ai识别置信度的才会重绘，多目标重绘可以用
         "ad_use_inpaint_width_height": 'false',  # 单独设置inpaint的宽高
         "ad_inpaint_width": 512,
         "ad_inpaint_height": 512,
@@ -330,15 +330,13 @@ def get_girl_in_car():
         'scheduler': 'Karras',  # 噪声调度器
         'batch_size': 1,  # 批大小
         'n_iter': 1,  # 每批n个
-        'seed': 601687573,  # 种子
+        'seed': -1,  # 种子
         'steps': 25,  # 步数
         'width': 512,  # 宽度
         'height': 512,  # 高度
-        'cfg_scale': 10,  # 引导词系数
+        'cfg_scale': 7,  # 引导词系数
         "alwayson_scripts": {}
     }
-    add_ad_face(girlInCar_data, prompt="detailed face")
-    add_ad_hand(girlInCar_data, neg_prompt="bad hand")
     return [girlInCar_data]
 
 
@@ -371,7 +369,7 @@ def get_imp(file_path):
 
 def get_file_depth(file_path):
     # check file_path is a file or a folder
-    multi = True if os.path.isdir(file_path) else Flase
+    multi = True if os.path.isdir(file_path) else False
 
     encoded_files_list = []
     if multi:
@@ -515,7 +513,6 @@ def get_file_upscale(file_path, scale=2):
                             "pixel_perfect": "false",
                             # "Balanced", "My prompt is more important", "ControlNet is more important"
                             "control_mode": 'Balanced',
-                            # "Balanced", "My prompt is more important", "ControlNet is more important"
 
                         }
                     ]

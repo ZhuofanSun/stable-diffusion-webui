@@ -117,7 +117,8 @@ class Generate:
 
             # 打印进度信息
             print("Generating " + images_name + " images...")
-            ProgressBar(thread, self.root_url, image_data, utils=self.utils).show_progress(batch=curr_batch, total_batch=total)
+            ProgressBar(thread, self.root_url, image_data, utils=self.utils).show_progress(batch=curr_batch,
+                                                                                           total_batch=total)
             print("Done!\n")
 
             if images_name == 'leak':  # 内存测试不保存图片
@@ -129,6 +130,11 @@ class Generate:
             index_available = self.utils.get_available_index(images_name, today)
 
             print(f"\n当前保存批次：{curr_batch + 1}/{total}")
+
+            if 'error' in self.response.json():
+                print("*"*40, "生成图片失败", "*"*40)
+                print(self.response.json())
+                raise ValueError("ERROR: 生成图片失败")
 
             try:
                 for i in range(image_data['batch_size'] * image_data['n_iter']):  # No. 图片 = batch_size * n_iter
