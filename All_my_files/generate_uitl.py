@@ -9,49 +9,77 @@ from utils import Utils
 
 
 class Generate:
-    def __init__(self, root_url=r'http://127.0.0.1:7860'):
+    def __init__(self, root_url=r'http://127.0.0.1:7860', utils=None):
+        """
+        对sd-webui api的直接调用，以及获取返回
+        :param root_url: sd-webui 的根url
+        :param utils: 工具类，主要用来获取process信息
+        """
         self.response = None  # 储存向sd-webui发送请求后的响应
         self.option_data = {}  # 用于存储选项数据
-        self.utils = Utils(root_url)
+        if utils is None:
+            self.utils = Utils(root_url)
+        else:
+            self.utils = utils
         self.root_url = root_url
 
     def set_clip(self, new_clip=None):
-
+        """
+        储存准备更新的clip值，设置这个函数后需用post_option函数实际更改
+        :param new_clip: 新的clip值 : int
+        :return: None
+        """
         if new_clip is None:
             pass
         else:
             self.option_data["CLIP_stop_at_last_layers"] = new_clip
 
     def set_model(self, new_model=None):
-
+        """
+        储存准备更新的clip值，设置这个函数后需用post_option函数实际更改
+        :param new_model: 新的checkpoint : string
+        :return:  None
+        """
         if new_model is None:
             pass
         else:
             self.option_data["sd_model_checkpoint"] = new_model
 
     def set_vae(self, new_vae=None):
-
+        """
+        储存准备更新的vae值，设置这个函数后需用post_option函数实际更改
+        :param new_vae: 新的vae : string
+        :return: None
+        """
         if new_vae is None:
             pass
         else:
             self.option_data["sd_vae"] = new_vae
 
     def post_option(self):
-
+        """
+        提交选项数据到sd-webui
+        :return: None
+        """
         if 'sd_vae' not in self.option_data.keys():
             self.option_data['sd_vae'] = None
 
         requests.post(url=self.utils.get_options_url(), json=self.option_data)
 
     def submit_post(self, url, data):
-        """向url发送post请求"""
+        """
+        根据url 调用api并且获取返回，
+        :param url: 准备调用的api的url  eg. /sdapi/v1/txt2img, img2img,....
+        :param data: 向api输入的信息，json格式
+        :return: None
+        """
         try:
             if isinstance(data, dict):
                 self.response = requests.post(url, data=json.dumps(data))
-                print("切换模型...")
+                print("\n api调用完成，成功获取数据\n")
                 time.sleep(3)
             else:
-                raise TypeError("data must be dict")
+                raise TypeError("ERROR: submit_post(), data must be dict")
         except requests.exceptions.RequestException as e:
             # 连接导致的
             print(e)
@@ -89,7 +117,7 @@ class Generate:
 
             # 打印进度信息
             print("Generating " + images_name + " images...")
-            ProgressBar(thread, self.root_url, image_data).show_progress(batch=curr_batch, total=total)
+            ProgressBar(thread, self.root_url, image_data, utils=self.utils).show_progress(batch=curr_batch, total_batch=total)
             print("Done!\n")
 
             if images_name == 'leak':  # 内存测试不保存图片

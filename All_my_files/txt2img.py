@@ -10,7 +10,7 @@ option_data = {}
 
 
 def txt2img_test_cfg(data_json):
-    generate = Generate()
+    generate = Generate(utils=utils)
 
     for i in range(4, 11):
         data_json[0]['cfg_scale'] = i
@@ -18,7 +18,7 @@ def txt2img_test_cfg(data_json):
 
 
 def txt2img_test_model(data_json):
-    generate = Generate()
+    generate = Generate(utils=utils)
 
     for i in ['aamXLAnimeMix_v10.safetensors [d48c2391e0]'
               'abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]',
@@ -31,7 +31,7 @@ def txt2img_test_model(data_json):
 
 
 def txt2img_test_vae(data_json):
-    generate = Generate()
+    generate = Generate(utils=utils)
     generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
     for i in [None, 'clearvaeSD15_v23.safetensors', 'klF8Anime2VAE_klF8Anime2VAE.safetensors']:
         generate.set_vae(i)
@@ -40,7 +40,7 @@ def txt2img_test_vae(data_json):
 
 
 def txt2img_test_blue():
-    generate = Generate()
+    generate = Generate(utils=utils)
 
     girl_data = data.get_blue_girl()
 
@@ -68,35 +68,36 @@ def main():
     else:
         print("webui 运行中")
 
-    generate = Generate()
+    generate = Generate(utils=utils)
 
-    # angelMiku_data = data.get_angel_miku()
+    angelMiku_data = data.get_angel_miku()
 
-    # girInCar_data = data.get_girl_in_car()
+    girInCar_data = data.get_girl_in_car()
 
-    # imp_data = data.get_imp(
-    #     "/Users/sunzhuofan/sdai/my_sd_webui/outputs/img2img-images/2024-05-17/00000-2888002140.jpg"
-    # )
+    imp_data = data.get_imp(
+        "/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/2024-05-17/00013-3727549206.png"
+    )
+
     # TODO: 一次调用api最多处理9张，否则报错
     # TODO：进行判断，如果大于5张，就分批处理 <- 一次9张api也有概率报错，干脆5张
-    # depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test")
+    depth_data = data.get_file_depth("/Users/sunzhuofan/sdai/my_sd_webui/outputs/txt2img-images/test")
 
     # tests ----------------------------------------
     # txt2img_test_cfg(angelMiku_data)
     # txt2img_test_model(angelMiku_data)
     # txt2img_test_vae(girInCar_data)
-    txt2img_test_blue()
+    # txt2img_test_blue()
 
     # normal test ----------------------------------
-    # data.add_ad(imp_data[0], 'imp,seductive_smile')
-    # generate.set_clip(2)
-    # generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
-    # generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
-    # generate.post_option()
-    # generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
+    data.add_ad_face(imp_data[0], 'imp,seductive_smile')
+    generate.set_clip(2)
+    generate.set_model('abyssorangemix3AOM3_aom3a1b.safetensors [5493a0ec49]')
+    generate.set_vae('klF8Anime2VAE_klF8Anime2VAE.safetensors')
+    generate.post_option()
+    generate.generate(url=utils.get_txt2img_url(), image_data_list=imp_data, images_name='imp')
 
     # depth test --------------------------------------
-    # generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
+    generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
 
     print("Running memory leak test")
     leak_data = data.get_leak()
@@ -121,15 +122,15 @@ if __name__ == '__main__':
         utils.kill_script()  # 结束脚本
         utils.mem_collect()
 
-    except Exception as e:
-        print("*" * 40, "  Exception  ", "*" * 40)
-        traceback.print_exc()  # 打印堆栈跟踪信息
+    except KeyboardInterrupt:
+        print("*" * 40, "  KeyboardInterrupt  ", "*" * 40)
         utils.wait_3_secondes()
         utils.kill_script()  # 结束脚本
         utils.mem_collect()
 
-    except KeyboardInterrupt:
-        print("*" * 40, "  KeyboardInterrupt  ", "*" * 40)
+    except Exception as e:
+        print("*" * 40, "  Exception  ", "*" * 40)
+        traceback.print_exc()  # 打印堆栈跟踪信息
         utils.wait_3_secondes()
         utils.kill_script()  # 结束脚本
         utils.mem_collect()

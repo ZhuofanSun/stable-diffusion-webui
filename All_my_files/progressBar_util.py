@@ -21,36 +21,51 @@ def second2time(second):
 
 
 class ProgressBar:
-    def __init__(self, thread, root_url: str, image_data):
+    def __init__(self, thread, root_url: str, image_data, utils=None):
         self.thread = thread
-        self.utils = Utils(root_url)
+        if utils is None:
+            self.utils = Utils(root_url)
+        else:
+            self.utils = utils
         self.image_data = image_data
 
-    def show_progress(self, batch, total):
+    def show_progress(self, batch, total_batch):
         if not isinstance(self.image_data, dict):
             print("*" * 40, " Image_data类型错误 ", "*" * 40)
             raise ValueError("image_data必须是字典/json")
 
         try:
-            print(f"当前处理批次： {batch+1}/{total} ")
+            print("等待任务开始...")
+            start = time.time()
+            steps, job_count = 0, 0
+            print()
+            while job_count is None or steps is None or steps * job_count <= 0:
+                if time.time() - start > 5:
+                    break
+                progress = self.utils.get_progress()  # dict
+                steps = progress["state"]['sampling_steps']
+                job_count = progress["state"]["job_count"]
+                time.sleep(0.8)
 
-            total = self.image_data['steps'] * self.image_data['n_iter'] * self.image_data['batch_size']
+            total = steps * job_count
+            print("任务开始。")
+            print(f"\n当前处理批次： {batch + 1}/{total_batch} ")
             # 进度条的总值
-            with tqdm(total=total) as pbar:
+            with tqdm(total=100) as pbar:
                 while self.thread.is_alive():
                     progress = self.utils.get_progress()  # dict
                     progress_percentage = progress["progress"]
                     eta = progress["eta_relative"]
-                    job_count = progress["state"]["job_count"]
                     job_no = progress["state"]["job_no"]
 
                     # 更新进度条
                     pbar.n = int(progress_percentage * total)
-                    pbar.set_description(f"ETA: {second2time(eta)} | {job_no}/{job_count}")
+                    pbar.set_description(f"预估剩余时间: {second2time(eta)} | {job_no}/{job_count}")
                     pbar.refresh()
 
                     time.sleep(1)  # 休眠1秒
         except KeyError:
+            # controlnet 没有进程api
             if self.utils.get_process() is not None:
                 # 实时读取输出
                 while self.thread.is_alive():
