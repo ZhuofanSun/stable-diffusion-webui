@@ -90,7 +90,6 @@ def main():
     # 检查webui能否访问，不能访问就启动webui
     if not utils.check_check_url():
         # 没连通就启动webui脚本
-        # TODO: 脚本启动过程中
         print("-" * 20, "webui，启动！", "-" * 20)
         utils.start_webui()
     else:
