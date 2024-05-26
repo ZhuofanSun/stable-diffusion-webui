@@ -1,16 +1,12 @@
 import traceback
 
 from generate_uitl import Generate
-import datafile as data
 from utils import Utils
 
 utils = Utils()
 
 option_data = {}
 
-
-# TODO: upscale 之前要改模型
-# TODO: txt2img -> upscale 捆绑
 
 def main():
     upscaler = ["None", "Lanczos", "Nearest", "4x-UltraSharp", "DAT x2", "DAT x3", "DAT x4", "LDSR",
