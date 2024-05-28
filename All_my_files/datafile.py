@@ -46,6 +46,26 @@ ADetailer 模型：
 """
 
 
+def get_template_data():
+    template_data = {
+        # 正向提示词
+        'prompt': '',
+        # 反向提示词
+        'negative_prompt': '',
+        'sampler_index': 'DPM++ SDE',  # 采样器
+        'scheduler': 'Karras',  # 噪声调度器
+        'batch_size': 1,  # 批大小
+        'n_iter': 1,  # 每批n个
+        'seed': -1,  # 种子
+        'steps': 20,  # 步数
+        'width': 512,  # 宽度
+        'height': 512,  # 高度
+        'cfg_scale': 7,  # 引导词系数
+        "alwayson_scripts": {}
+    }
+    return template_data
+
+
 def set_prompt(data, prompt):
     if not isinstance(data, dict):
         raise ValueError("data必须是字典/json")

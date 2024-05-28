@@ -3,6 +3,7 @@ import traceback
 from generate_uitl import Generate
 import datafile as data
 from utils import Utils
+import llm_utils as llm
 
 utils = Utils()
 
@@ -86,7 +87,11 @@ def txt2img_test_blue():
         generate.generate(url=utils.get_txt2img_url(), image_data_list=leak_data, images_name="leak")
 
 
-def main():
+def txt2img_test_llm_generation():
+    template_data = data.get_template_data()
+    print(llm.ask_to_fill_data(template_data))
+    print(template_data)
+
     # 检查webui能否访问，不能访问就启动webui
     if not utils.check_check_url():
         # 没连通就启动webui脚本
@@ -94,6 +99,22 @@ def main():
         utils.start_webui()
     else:
         print("webui 运行中")
+
+    generate = Generate(utils=utils)
+    generate.set_model('aamXLAnimeMix_v10.safetensors [d48c2391e0]')
+    generate.set_vae('None')
+    generate.post_option()
+    generate.generate(url=utils.get_txt2img_url(), image_data_list=[template_data], images_name="test_llm")
+
+
+def main():
+    # # 检查webui能否访问，不能访问就启动webui
+    # if not utils.check_check_url():
+    #     # 没连通就启动webui脚本
+    #     print("-" * 20, "webui，启动！", "-" * 20)
+    #     utils.start_webui()
+    # else:
+    #     print("webui 运行中")
 
     generate = Generate(utils=utils)
 
@@ -126,7 +147,9 @@ def main():
     # depth test --------------------------------------
     # generate.generate(url=utils.get_controlnet_detect_url(), image_data_list=depth_data, images_name='depth')
 
-    txt2img_scale()
+    # txt2img_scale()
+
+    txt2img_test_llm_generation()
     print("Running memory leak test")
     leak_data = data.get_leak()
     generate.generate(url=utils.get_txt2img_url(), image_data_list=leak_data, images_name='leak')
